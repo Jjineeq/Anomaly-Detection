@@ -1,3 +1,5 @@
+import numpy as np
+
 def hotellings_tsqare(trdat, tedat):
     '''
     Hotellings T-square : 공분산을 반영한 유클리디안 거리 (마할라노비스 거리)
@@ -8,8 +10,8 @@ def hotellings_tsqare(trdat, tedat):
     obs = trdat.shape[0]
     dim = trdat.shape[1]
     
-    mu = trdat.apply(np.mean, axis=0) 
-    sinv = np.linalg.pinv(trdat.cov())
+    mu = trdat.apply(np.mean, axis=0) # 열단위 평균계산
+    sinv = np.linalg.pinv(trdat.cov()) # 공분산 역행렬
 
     dte = (tedat-mu).values 
     
@@ -31,4 +33,5 @@ def bootstrap_limit(stat, alpha=0.05, bootstrap=100):
     alpha = 100 - alpha
     samsize = max(10000, len(stat))
     limit = np.mean(list(map(lambda x:np.percentile(np.random.choice(stat,samsize,replace=True),alpha), range(0,bootstrap))))
+    # stat에서 samsize만큼 선택 후 75%분위수(alpha에따라 변경) 뽑기 이후 bootstrap만큼 반복 후 리스트로 만들고 평균 계산
     return limit
