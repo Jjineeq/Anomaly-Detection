@@ -1,3 +1,5 @@
+source("C:/Users/User/github/Function/R/t_square.R")
+
 ir = iris[,1:4]
 
 library(corrplot)
@@ -37,8 +39,7 @@ trdat = ir
 tedat = ir
 k=3
 alpha = 0.05
-cbm = 
-function(trdat, tedat, alpha,k) {
+cbm = function(trdat, tedat, alpha,k) {
   
   tr_k = kmeans(trdat,k)
   s1 = cbind(trdat,tr_k$cluster)
@@ -53,7 +54,7 @@ function(trdat, tedat, alpha,k) {
     mu = colMeans(s2[,1:dim])
     
     CL = qf(1-alpha,dim,obs - dim)*(dim*(obs+1)*(obs-1)/(obs*(obs-dim)))
-    #library(pracma)
+    
     sinv = ginv(cov(s2[,1:dim]))  
     
     mu_mat = repmat(mu, nrow(tedat),1)
@@ -71,28 +72,32 @@ function(trdat, tedat, alpha,k) {
 
   return (ret)                                    
 }
-trdat = cbm_res
-boot_cl = function(trdat,alpha){
-  s2_mat = matrix(0,100,1)
-  for(i in 1:100){
-    s1 = sample(trdat,100,replace = T)
-    s2 = quantile(s1,(1-alpha))
-    s2_mat[i,] = s2
+
+trdat_test = cbm(trdat, tedat, 0.01,3)
+
+bootlimit1 = function(stat, alpha, m){ # stat : 추론이 필요한 통계량, alpha : 유의확률, m : 복원추출 횟수 
+  perc_matrix = matrix(numeric(0), 1, m)    
+  
+  for(i in 1:m){
+    sample_temp = sample(stat, size = nrow(as.data.frame(stat)), replace = TRUE, prob = NULL) # 각 데이터에 대한 복원 추출 수행
+    sample_temp = as.data.frame(sample_temp) 
+    
+    perc_matrix[,i] <- quantile(sample_temp[,1] , 1-alpha);  # 해당 샘플 데이터에 대한 특정 quantile(분위수) 추론 (alpha에 해당하는)            
+    
   }
   
-  cl = mean(s2_mat)
+  CL= mean(perc_matrix)  # 복원추출된 붓스트랩 샘플에 대한 특정 분위수의 평균값 추정
+  return(CL)
   
-  res = list(cl=cl)
-  return(res)
 }
 
-boot_cl(cbm_res,0.05)
+s1 = bootlimit1(trdat, 0.05, 100)
 
 
 ####
 
 for(i in 1:100){
-  ir_cbm = cbm(ir[1:55,],ir,i/100,k=20)
+  ir_cbm = cbm(ir[1:55,],ir,i/100,k=3)
   cbm_boot = boot_cl(ir_cbm$cbm_res,i/100)
   mat_mat[i,1] = i/100
   mat_mat[i,2] = length(which(ir_cbm$cbm_res[1:50]>cbm_boot$cl))/50
@@ -100,3 +105,4 @@ for(i in 1:100){
 }
 
 points(mat_mat[,2:3],col='red',type='o')
+
