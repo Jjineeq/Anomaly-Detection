@@ -53,7 +53,7 @@ cbm = function(trdat, tedat, alpha,k) {
     
     mu = colMeans(s2[,1:dim])
     
-    CL = qf(1-alpha,dim,obs - dim)*(dim*(obs+1)*(obs-1)/(obs*(obs-dim)))
+    #CL = qf(1-alpha,dim,obs - dim)*(dim*(obs+1)*(obs-1)/(obs*(obs-dim))) # bootstrap(비모수 방법), CL(모수적인 방법) 둘중 하나만 사용 
     
     sinv = ginv(cov(s2[,1:dim]))  
     

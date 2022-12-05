@@ -16,6 +16,8 @@ df_tr = df[,8:49] # 필요 정보만 select
 df_te = df2[,8:49] # 필요 정보만 select
 df_te_2 = df3[,8:49] # 필요 정보만 select
 
+te = rbind(df_te, df_te_2)
+
 head(df_tr)
 head(df_te)
 
@@ -49,8 +51,8 @@ plot(mat_mat[,2:3],type = 'o')
 
 mat_mat1 = matrix(0,1000,3)
 for(i in 1:100){
-  ir_cbm = cbm(df_tr,df_te,i/100,k=30)
-  cbm_boot = boot_cl(ir_cbm$cbm_res,i/100)
+  ir_cbm = cbm(df_tr,df_te,i/100,k=2)
+  cbm_boot = bootlimit1(ir_cbm$cbm_res,i/100)
   mat_mat1[i,1] = i/100
   mat_mat1[i,2] = length(which(ir_cbm$cbm_res[1:50]>cbm_boot$cl))/1000
   mat_mat1[i,3] = length(which(ir_cbm$cbm_res[51:150]<cbm_boot$cl))/1000
