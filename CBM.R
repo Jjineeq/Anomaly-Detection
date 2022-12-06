@@ -15,13 +15,13 @@ plot(ir_t2$Tsq_mat,type='o')
 abline(h=c(ir_t2$CL),col='red')
 abline(v=c(50),col='blue',lwd=3)
 
-#alpha가 작을 수록 false alarm의 갯수가 적어짐
+# alpha가 작을 수록 false alarm의 갯수가 적어짐
 
-####alpha error 성능은~~
+#### alpha error 성능은~~
 length(which(ir_t2$Tsq_mat[1:50]>ir_t2$CL))/50
 
 
-####beta error 성능은~~
+#### beta error 성능은~~
 length(which(ir_t2$Tsq_mat[51:150]<ir_t2$CL))/100
 
 mat_mat = matrix(0,1000,3)
@@ -94,7 +94,6 @@ bootlimit1 = function(stat, alpha, m){ # stat : 추론이 필요한 통계량, a
 
 s1 = bootlimit1(trdat, 0.05, 100)
 
-
 ####
 
 for(i in 1:100){
@@ -105,5 +104,4 @@ for(i in 1:100){
   mat_mat[i,3] = length(which(ir_cbm$cbm_res[51:150]<cbm_boot))/100
 }
 
-points(mat_mat[,2:3],col='red',type='l')
-tail(mat_mat)
+points(mat_mat[,2:3],col='red',type='o')

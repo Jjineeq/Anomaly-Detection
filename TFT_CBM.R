@@ -8,10 +8,11 @@ source("C:/Users/User/github/Function/R/msetRegression.R")
 library(corrplot)
 library(MASS)
 library(pracma)
+library(autoencoder)
 
-df = read.csv("C:/Users/user/github/Anomaly-Detection/data/ph1.csv",header = T, fileEncoding = 'CP949') # train
-df2 = read.csv("C:/Users/user/github/Anomaly-Detection/data/ph2.csv",header = T, fileEncoding = 'CP949') # normal test
-df3 = read.csv("C:/Users/user/github/Anomaly-Detection/data/ph2_out.csv",header = T, fileEncoding = 'CP949') # abnormal test
+df = read.csv("C:/Users/user/github/Anomaly-Detection/data/ph1.csv", fileEncoding = 'CP949') # train
+df2 = read.csv("C:/Users/user/github/Anomaly-Detection/data/ph2.csv", fileEncoding = 'CP949') # normal test
+df3 = read.csv("C:/Users/user/github/Anomaly-Detection/data/ph2_out.csv", fileEncoding = 'CP949') # abnormal test
 
 head(df)
 
@@ -20,68 +21,27 @@ df_te = df2[,8:49] # 필요 정보만 select
 df_te_2 = df3[,8:49] # 필요 정보만 select
 
 te = rbind(df_te, df_te_2)
-s = rbind(df_tr,te)
 
-head(df_tr)
-head(df_te)
+df_t2 = t_square(df_tr, te, 0.05)
 
-df_t2 = t_square(df_tr, df_te,0.05) # train, normal test
-df_t2_ab = t_square(df_tr, te, 0.05) # train, normal test + abnormal test
+plot(df_t2$Tsq_mat, type = 'l', ylim = c(0,600))
 
-### 정상 plot 이후 상한선 설정 
-plot(df_t2$Tsq_mat, type = 'o', ylim = c(0,600)) 
 abline(h = c(df_t2$CL), col = 'red')
 
-### 전체 plot 이후 상한선 설정 
-plot(df_t2_ab$Tsq_mat, type = 'l', ylim = c(0,600))
-abline(h = c(df_t2_ab$CL), col = 'red') 
-
-#### alpha error
-length(which(df_t2$Tsq_mat>df_t2$CL))/2000
-length(which(df_t2_ab$Tsq_mat>df_t2$CL))/2000
-
-#### beta error
-length(which())
+length(which(df_t2$Tsq_mat > df_t2$CL))/2000
+length(which(df_t2$Tsq_mat < df_t2$CL))/2000
 
 
+# 유의수준 변경에 따른 alpha, beta error 
+mat = matrix(0,1000,3)
 
-
-
-
-
-
-mat_mat = matrix(0,1000,3)
-for (i in 1:100) {
-  df_t2 = t_square(df_te, df_tr, i/100)
-  mat_mat[i,1] = i/100
-  mat_mat[i,2] = length(which(df_t2$Tsq_mat>df_t2$CL))/2000 # alpha error
-  mat_mat[i,3] = length(which(df_t2$Tsq_mat<df_t2$CL))/2000 # beta error
+for (i in 1:1000) {
+  t2 = t_square(df_tr, te, i/1000)
+  mat[i,1] = i/1000
+  mat[i,2] = length(which(t2$Tsq_mat[1:1000] > t2$CL))/2000 # alpha error
+  mat[i,3] = length(which(t2$Tsq_mat[1001:2000] < t2$CL))/2000 # beta error
 }
 
-plot(mat_mat[,2:3],type = 'o')
+plot(mat[,2:3], type = 'o') # 유의 수준 변경에 따른 alpha, beta error 변화
 
-mat_mat2 = matrix(0,1000,3)
-for (i in 1:100) {
-  df_t2 = t_square(df_te_2, df_tr, i/100)
-  mat_mat2[i,1] = i/100
-  mat_mat2[i,2] = length(which(df_t2$Tsq_mat>df_t2$CL))/2000 # alpha error
-  mat_mat2[i,3] = length(which(df_t2_ab$Tsq_mat<df_t2$CL))/2000 # beta error
-}
-
-plot(mat_mat2[,2:3],type = 'o')
-
-
-
-
-
-# mat_mat1 = matrix(0,1000,3)
-# for(i in 1:100){
-#   ir_cbm = cbm(df_tr,df_te,i/100,k=2)
-#   cbm_boot = bootlimit1(ir_cbm$cbm_res,i/100)
-#   mat_mat1[i,1] = i/100
-#   mat_mat1[i,2] = length(which(ir_cbm$cbm_res[1:50]>cbm_boot$cl))/1000
-#   mat_mat1[i,3] = length(which(ir_cbm$cbm_res[51:150]<cbm_boot$cl))/1000
-# }
-# 
-# points(mat_mat1[,2:3],col='red',type='o')
 
