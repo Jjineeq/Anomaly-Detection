@@ -92,6 +92,8 @@ bootlimit1 = function(stat, alpha, m){ # stat : 추론이 필요한 통계량, a
   
 }
 
+#bootlimit(trdat)
+
 s1 = bootlimit1(trdat, 0.05, 100)
 
 ####
@@ -105,3 +107,4 @@ for(i in 1:100){
 }
 
 points(mat_mat[,2:3],col='red',type='o')
+
