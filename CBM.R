@@ -108,3 +108,38 @@ for(i in 1:100){
 
 points(mat_mat[,2:3],col='red',type='o')
 
+trdat = df_tr
+tedat = te
+
+cbm_solve = function(trdat, tedat, alpha,k) {
+  
+  tr_k = kmeans(trdat,k)
+  s1 = cbind(trdat,tr_k$cluster)
+  cbm_mat_solve = matrix(0,nrow(tedat),k)
+  
+  for(i in 1:k){
+    s2 = subset(s1,s1$`tr_k$cluster`==i)
+    
+    obs = nrow(s2)
+    dim = ncol(trdat)
+    
+    mu_solve = colMeans(s2[,1:dim]) # 열별 평균
+    
+    sinv = solve(cov(s2[,1:dim])) # 공분산 역행렬 
+    
+    mu_mat_solve = repmat(mu_solve, nrow(tedat),1) # 배열 복사
+    dte_solve = tedat-mu_mat_solve # test set에 열별 평균 빼줌
+    
+    Tsq_mat_solve = matrix(numeric(0), nrow(tedat),1) # 빈 행렬 생성 
+    
+    # 마할라노비스 거리 계산 후 cbm_mat 저장 
+    for( j in 1:nrow(tedat)) {
+      Tsq_mat_solve[j,1] = as.double(dte_solve[j,]) %*% sinv %*% t(t(as.double(dte_solve[j,])))
+    }
+    cbm_mat_solve[,i] = Tsq_mat_solve
+  }
+  cbm_res_solve = apply(cbm_mat_solve,1,min) # 행 단위로 min 값 
+  ret_solve = list(cbm_res_solve=cbm_res_solve) # 
+  
+  return (ret_solve)                       
+}

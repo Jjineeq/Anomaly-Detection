@@ -123,6 +123,22 @@ for (i in 1:1000) {
 }
 
 plot(mat[,2:3],type='o')
-points(mat3[,2:3],col='red',type='o')
+points(mat3[,2:3],col='blue',type='o')
 
 
+##
+mat4 = matrix(0,1000,3)
+
+tft_cbm_solve = cbm_solve(df_tr, te, 0.05, 3)
+
+s4 = cbm(df_tr, df_tr, 0.05, 5)
+
+for(i in 1:1000){
+  tft_boot = bootlimit1(s4$cbm_res, i/1000, 100)
+  mat4[i,1] = i/1000
+  mat4[i,2] = length(which(tft_cbm_solve$cbm_res[1:1000]>tft_boot))/1000
+  mat4[i,3] = length(which(tft_cbm_solve$cbm_res[1001:2000]<tft_boot))/1000
+}
+mat4
+
+points(mat4[,2:3],col='green',type='o')
