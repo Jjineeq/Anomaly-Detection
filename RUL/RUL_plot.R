@@ -1,7 +1,7 @@
-rm(list=ls())
-src_dir = 'C:\\Users\\User\\github\\data\\rul_hrs\\rul_hrs.csv' # 경로 설정
-src_file = list.files(src_dir)
-for(i in 1:length(src_file)) source(paste(src_dir, src_file[i], sep=''), encoding='utf-8')
+# rm(list=ls())
+# src_dir = 'C:\\Users\\User\\github\\data\\rul_hrs\\rul_hrs.csv' # 경로 설정
+# src_file = list.files(src_dir)
+# for(i in 1:length(src_file)) source(paste(src_dir, src_file[i], sep=''), encoding='utf-8')
 
 
 wd =  'C:\\Users\\User\\github\\data\\rul_hrs\\rul_hrs.csv' # 경로 설정
@@ -12,11 +12,11 @@ data = read.csv(wd)
 rul = data$rul
 
 # 고장 7개에 대한 센싱 값 추출
-# failuredf = list()
-# failuredf[[1]] = data[1:which(rul==0)[1],3:52]
-# for(i in 1:6){
-#   failuredf[[(i+1)]] = data[(which(rul==0)[i]+1):which(rul==0)[i+1],3:52]
-# }
+failuredf = list()
+failuredf[[1]] = data[1:which(rul==0)[1],3:52]
+for(i in 1:6){
+  failuredf[[(i+1)]] = data[(which(rul==0)[i]+1):which(rul==0)[i+1],3:52]
+}
 
 # # 고장 2에 대한 센서
 # failureidx = 2
