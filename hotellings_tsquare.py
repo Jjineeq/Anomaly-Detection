@@ -1,6 +1,6 @@
 import numpy as np
 
-def hotellings_tsqare(trdat, tedat):
+def hotellings_tsquare(trdat, tedat):
     '''
     Hotellings T-square : 공분산을 반영한 유클리디안 거리 (마할라노비스 거리)
     
